@@ -15,13 +15,13 @@ const db = mysql.createConnection({
 async function getUsers(url) {
     const response = await fetch(url);
     const result = await response.json();
-    const usersID = result.reduce((acc, item) => {
-        const { id, name, username, email, address, phone,  price = Math.floor(Math.random()*100) } = item;
+    return result.reduce((acc, item) => {
+        const {id, name, username, email, address, phone, price = Math.floor(Math.random() * 100)} = item;
+        address.city = undefined;
         acc.push([id, name, username,
             email, address.city, phone, price]);
         return acc
-    }, [])
-    return usersID;
+    }, []);
 }
 
     db.connect(async (err) => {
@@ -33,7 +33,7 @@ async function getUsers(url) {
 
             //Insert data from the database
             let query = `INSERT INTO user_records.users (id, name, username, email, city, phone, price) VALUES ?`;
-            db.query(query, [values], function (err, result) {
+            db.query(query, [values], function (err) {
                 if (err) {
                     console.log(err)
                 } else {
