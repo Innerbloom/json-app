@@ -16,12 +16,11 @@ async function getUsers(url) {
     const response = await fetch(url);
     const result = await response.json();
     const usersID = result.reduce((acc, item) => {
-        const { id, name, username, email, address, phone, price = Math.floor(Math.random()*100) } = item;
+        const { id, name, username, email, address, phone,  price = Math.floor(Math.random()*100) } = item;
         acc.push([id, name, username,
             email, address.city, phone, price]);
         return acc
     }, [])
-    console.log(usersID)
     return usersID;
 }
 
@@ -46,7 +45,7 @@ async function getUsers(url) {
     });
 
 //Retrieving data from the database
-const query = `SELECT * FROM user_records.users`;
+const query = `SELECT * FROM user_records.users WHERE price = (SELECT MAX(price) FROM users)`;
 db.query(query, function (err, results) {
     if (err) {
         console.log(err);
