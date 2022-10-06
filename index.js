@@ -1,6 +1,7 @@
 const mysql = require("mysql");
 const express = require('express');
 const app = require("request");
+const e = require("express");
 
 const url = 'https://jsonplaceholder.typicode.com/users';
 
@@ -15,23 +16,25 @@ async function getUsers(url) {
     const response = await fetch(url);
     const result = await response.json();
     const usersID = result.reduce((acc, item) => {
-        const { id, name, username, email, address, phone } = item;
+        const { id, name, username, email, address, phone, price = Math.floor(Math.random()*100) } = item;
         acc.push([id, name, username,
-            email, address.city, phone]);
+            email, address.city, phone, price]);
         return acc
     }, [])
-    //console.log(usersID);
+    console.log(usersID)
     return usersID;
 }
 
 
+
+//Insert data from the database
     db.connect(async (err) => {
         if (err) {
             console.log('Error occurred..', err)
         } else {
             console.log('MySQL Connected...')
             let values = await getUsers(url);
-            let query = `INSERT INTO user_records.users (id, name, username, email, city, phone) VALUES ?`;
+            let query = `INSERT INTO user_records.users (id, name, username, email, city, phone, price) VALUES ?`;
             db.query(query, [values], function (err, result) {
                 if (err) {
                     console.log(err)
@@ -41,6 +44,18 @@ async function getUsers(url) {
             })
         }
     });
+
+//Retrieving data from the database
+const query = `SELECT * FROM user_records.users`;
+db.query(query, function (err, results) {
+    if (err) {
+        console.log(err);
+    } else {
+        console.log(results)
+    }
+})
+
+
 
 
 
