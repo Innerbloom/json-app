@@ -1,9 +1,9 @@
 const mysql = require("mysql");
-const express = require('express');
-const app = require("request");
-const e = require("express");
 
 const url = 'https://jsonplaceholder.typicode.com/users';
+let time = performance.now();
+time = performance.now() - time;
+console.log('Время выполнения скрипта = ', time);
 
 const db = mysql.createConnection({
     host: 'localhost',
@@ -24,35 +24,48 @@ async function getUsers(url) {
     return usersID;
 }
 
-
-
-//Insert data from the database
     db.connect(async (err) => {
         if (err) {
             console.log('Error occurred..', err)
         } else {
             console.log('MySQL Connected...')
             let values = await getUsers(url);
+
+            //Insert data from the database
             let query = `INSERT INTO user_records.users (id, name, username, email, city, phone, price) VALUES ?`;
             db.query(query, [values], function (err, result) {
                 if (err) {
                     console.log(err)
                 } else {
-                    console.log("Insert to DB" + result)
+                    console.log("Insert to DB");
                 }
             })
         }
+        //Retrieving data from the database
+        const query = `SELECT * FROM user_records.users WHERE price = (SELECT MAX(price) FROM users)`;
+        db.query(query, function (err, results) {
+            if (err) {
+                console.log(err);
+            } else {
+                console.log(results)
+            }
+        })
     });
 
-//Retrieving data from the database
-const query = `SELECT * FROM user_records.users WHERE price = (SELECT MAX(price) FROM users)`;
-db.query(query, function (err, results) {
+// DELETE all data from Database
+/*db.connect(function (err) {
     if (err) {
         console.log(err);
     } else {
-        console.log(results)
+        db.query(`DELETE FROM user_records.users`, function (err, result, fields) {
+            if (err) {
+                console.log(err);
+            }
+        })
     }
-})
+})*/
+
+
 
 
 
